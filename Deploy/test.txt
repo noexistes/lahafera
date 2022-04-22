@@ -1,0 +1,1 @@
+#!/bin/sh # chkconfig: 23 99 1 # Required-Start: # Required-Stop: # Short-Description: Init script for ''_'' # Description: A simple daemon wrapper for ''_''
