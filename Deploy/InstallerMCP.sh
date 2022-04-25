@@ -3,9 +3,9 @@
 ## Variables
 usuario=x002896
 host=$(hostname)
-mcp1='slz_mcp_ivr'
+mcp1='slz_mcp'
 num1=$(hostname | sed 's/PLIVRUNIAPP//')
-sus1=$(($num1-104)) ##Corregir numero de la resta una vez tengamos los nombres de equipo
+sus1=$(($num1-140)) ##Corregir numero de la resta una vez tengamos los nombres de equipo
 
 ## Condicional de menos a 10
 if [[ $sus1 -lt 10 ]]
