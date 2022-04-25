@@ -16,13 +16,13 @@ mkdir /opt/genesys/instaladores/LVR
 chown $usuario:accesstt /var/log/genesys/lvr
 chown $usuario:accesstt /opt/genesys/failed_recordings
 chown $usuario:accesstt /opt/genesys/lvr
-chown $usuario:accesstt /opt/genesys/instaladores/LVR
+chown $usuario:accesstt /opt/genesys/instaladores/LVR -R
 chown $usuario:accesstt IP_IntRcLVRRSPrem_8522248b1_ENU_linux.tar.gz
 chmod 755 /var/log/genesys/lvr
 chmod 755 /opt/genesys/failed_recordings
 chmod 755 /opt/genesys/jdk-8u241-linux-x64.rpm
 chmod 755 /opt/genesys/lvr
-chmod 755 /opt/genesys/instaladores/LVR
+chmod 755 /opt/genesys/instaladores/LVR -R
 chmod 755 IP_IntRcLVRRSPrem_8522248b1_ENU_linux.tar.gz
 
 ## Instalacion de JAVA
@@ -89,6 +89,5 @@ JRE_HOME=/usr/java/default/jre
 
 java -jar /opt/genesys/lvr/recover_LVRs.jar --mode recover --component MCP --properties /opt/genesys/lvr/MCP_premise.properties' > reproceso_manual.sh
 chown -R $usuario:accesstt reproceso_manual.sh
-chmod 755 /opt/genesys/lvr/reproceso_manual.sh
 mv reproceso_manual.sh /opt/genesys/lvr/
-
+chmod 755 /opt/genesys/lvr/reproceso_manual.sh
