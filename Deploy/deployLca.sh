@@ -1,68 +1,86 @@
 #!/bin/bash
 ## Recordar subir lca, LCA tazgz y killtree.sh
 ## Variables
+## logDir = Carpeta donde van los LOGS
+## installDir = basepath de las aplicaciones de genesys
+## unpackDir = carpeta para copiar y descomprimir el instalador
+## nameFolder = Carpeta donde va a quedar instalado el LCA RELATIVO a su installDir
+## lcaInstallFile = Archivo .tar.gz del instalador
+
 usuario=x002896
+logDir=/var/log/genesys
+installDir=/opt/genesys
+unpackDir=/opt/genesys/instaladores
+nameFolder=/LCA
+lcaInstallFile=IP_LCA_8510037b1_ENU_linux.tar.gz
 
-## Creacion Carpetas ##
-mkdir -p /opt/genesys/instaladores/LCA 
-mkdir -p /opt/genesys/LCA 
-mkdir -p /var/log/genesys/LCA 
-
-## TAR al archivo ##
-chown $usuario. /opt/genesys/IP_LCA_8510037b1_ENU_linux.tar.gz
-chmod 755 /opt/genesys/IP_LCA_8510037b1_ENU_linux.tar.gz
-tar -zvxf /opt/genesys/IP_LCA_8510037b1_ENU_linux.tar.gz -C /opt/genesys/instaladores/LCA
-mv /opt/genesys/IP_LCA_8510037b1_ENU_linux.tar.gz /opt/genesys/instaladores/IP_LCA_8510037b1_ENU_linux.tar.gz
-
-## Permisos ##
-chown $usuario. /var/log/genesys/ -R
-chown $usuario. /opt/genesys/ -R
-chmod 755 /var/log/genesys/LCA -R
-
-## Silent Install de Genesys
-
-echo '[ConfigServer]
+## Variables SilentInstall
 Host=PLGIRAPP197
 Port=2025
 User=u594135
 Password=123456
+DataModel=64
+
+## Creacion Carpetas ##
+mkdir -p $unpackDir$nameFolder
+mkdir -p $installDir$nameFolder
+mkdir -p $logDir$nameFolder
+
+## TAR al archivo ##
+chown $usuario. $installDir/$lcaInstallFile
+chmod 755 $installDir/$lcaInstallFile
+tar -zvxf $installDir/$lcaInstallFile -C $unpackDir$nameFolder
+mv $installDir/$lcaInstallFile $unpackDir/$lcaInstallFile
+
+## Permisos ##
+chown $usuario. $logDir/ -R
+chown $usuario. $installDir/ -R
+chmod 755 $logDir$nameFolder -R
+
+## Silent Install de Genesys
+
+echo '[ConfigServer]
+Host='$Host'
+Port='$Port'
+User='$User'
+Password='$Password'
 
 [IPCommon]
-InstallPath=/opt/genesys/LCA/
-DataModel=64
+InstallPath='$installDir$nameFolder'/
+DataModel='$DataModel'
 
 [LCA]
 TuneStartupFiles=no
 LCA_TLS_Mode=false
 Silent_Installation_Without_ConfigServer=no
-' >> genesys_silent.ini
-mv /opt/genesys/genesys_silent.ini /opt/genesys/instaladores/LCA/ip/genesys_silent.ini
-chmod 777 /opt/genesys/instaladores/LCA/ip/genesys_silent.ini
-su - $usuario -s /bin/bash -c 'cd /opt/genesys/instaladores/LCA/ip; ./install.sh -s -fr /opt/genesys/instaladores/LCA/ip/genesys_silent.ini -fl /opt/genesys/instaladores/LCA/ip/genesys_install_result.log'
+' > genesys_silent.ini
+mv $installDir/genesys_silent.ini $unpackDir$nameFolder/ip/genesys_silent.ini
+chmod 777 $unpackDir$nameFolder/ip/genesys_silent.ini
+su - $usuario -s /bin/bash -c "cd $unpackDir$nameFolder/ip; ./install.sh -s -fr $unpackDir$nameFolder/ip/genesys_silent.ini -fl $unpackDir$nameFolder/ip/genesys_install_result.log"
 
 
 ##Post Instalacion
 
-echo [general] >> lca.cfg
-echo wmiquery-timeout=-1 >> lca.cfg
-echo  >> lca.cfg
-echo [log] >> lca.cfg
-echo enable-thread=false >> lca.cfg
-echo verbose = all >> lca.cfg
-echo all = /var/log/genesys/LCA/LCA-$HOSTNAME >> lca.cfg
-echo keep-startup-file = true >> lca.cfg
-echo expire = 5 >> lca.cfg
-echo segment = 10000 >> lca.cfg
+echo '[general] 
+wmiquery-timeout=-1 
+ 
+[log] 
+enable-thread=false 
+verbose = all 
+all = '$logDir$nameFolder$nameFolder-$HOSTNAME' 
+keep-startup-file = true 
+expire = 5 
+segment = 10000 ' > lca.cfg
 
-rm /opt/genesys/LCA/lca.cfg
-mv /opt/genesys/lca.cfg /opt/genesys/LCA/lca.cfg
-chown $usuario. /opt/genesys/LCA/lca.cfg
-chmod 750 /opt/genesys/LCA/lca.cfg
+rm $installDir$nameFolder/lca.cfg
+mv $installDir/lca.cfg $installDir$nameFolder/lca.cfg
+chown $usuario. $installDir$nameFolder/lca.cfg
+chmod 750 $installDir$nameFolder/lca.cfg
 
 ## Generacion de servicio
 
 mv killtree.sh /usr/local/bin
-mv /opt/genesys/lca /etc/init.d/lca
+mv $installDir/lca /etc/init.d/lca
 sed "s/PLIVRUNIAPP013/$HOSTNAME/" /etc/init.d/lca >> /etc/init.d/lca2
 sed "s/x002492/$usuario/" /etc/init.d/lca2 >> /etc/init.d/genesys-LCA_$HOSTNAME
 chmod 755 /etc/init.d/genesys-LCA_$HOSTNAME
