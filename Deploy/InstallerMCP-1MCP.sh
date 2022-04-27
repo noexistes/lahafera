@@ -4,8 +4,8 @@
 
 usuario=x002896
 host=$(hostname)
-mcp1='slz_mcp'##Nombre del objeto de genesys dado de alta
-num1=$(hostname | sed 's/PLIVRUNIAPP//') ##
+mcp1='slz_mcp' 
+num1=$(hostname | sed 's/PLIVRUNIAPP//')
 sus1=$(($num1-140)) ##Corregir numero de la resta una vez tengamos los nombres de equipo
 logDir=/var/log/genesys
 installDir=/opt/genesys

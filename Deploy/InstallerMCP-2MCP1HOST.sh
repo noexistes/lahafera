@@ -4,13 +4,13 @@
 
 usuario=x002896
 host=$(hostname)
-mcp1='slz_mcp'##Nombre del objeto de genesys dado de alta
-num1=$(hostname | sed 's/PLIVRUNIAPP//') ##
+mcp1='slz_mcp'
+num1=$(hostname | sed 's/PLGIRAPP//')
 sus1=$(($num1-140)) ##Corregir numero de la resta una vez tengamos los nombres de equipo
 logDir=/var/log/genesys
 installDir=/opt/genesys
 unpackDir=/opt/genesys/instaladores/MCP
-mcpInstallFile=IP_vpMediaControl_9004606b1_ENU_linux.tar.gz
+mcpInstallFile=IP_vpMediaControl_9003653b1_ENU_linux.tar.gz
 
 ## Variables SilentInstall
 Host=PLGIRAPP197

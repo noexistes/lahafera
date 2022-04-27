@@ -20,9 +20,9 @@ mcp_configserver_username=recording
 mcp_configserver_password=recording
 mcp_minimumRecordingAge=0
 lvrrecovery_webDAV_tenants=Environment,UNKNOWN
-lvrrecovery_webDAV_UNKNOWN.unrecoverable.url=http://pgirhorwebdavvip/recordings
-lvrrecovery_webDAV_UNKNOWN.unrecoverable.username=dav_user
-lvrrecovery_webDAV_UNKNOWN.unrecoverable.password=dav_pass
+lvrrecovery_webDAV_UNKNOWN_unrecoverable_url=http://pgirhorwebdavvip/recordings
+lvrrecovery_webDAV_UNKNOWN_unrecoverable_username=dav_user
+lvrrecovery_webDAV_UNKNOWN_unrecoverable_password=dav_pass
 zabbix_Enabled=false
 lvrrecovery_parquet_Enabled=false
 
@@ -111,6 +111,6 @@ echo '#!/bin/bash
 JRE_HOME=/usr/java/default/jre
 
 java -jar '$installDir$nameFolder'/recover_LVRs.jar --mode recover --component MCP --properties '$installDir$nameFolder'/MCP_premise.properties' > reproceso_manual.sh
-chown -R $usuario/ reproceso_manual.sh
+chown -R $usuario/reproceso_manual.sh
 mv reproceso_manual.sh $installDir$nameFolder/
 chmod 755 $installDir$nameFolder/reproceso_manual.sh
