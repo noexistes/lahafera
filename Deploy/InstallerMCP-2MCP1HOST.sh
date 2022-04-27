@@ -1,11 +1,24 @@
 #!/bin/bash
-
+##Todas las variables de carpeta, no deben finalizar con /
 ## Variables
+
 usuario=x002896
 host=$(hostname)
 mcp1='slz_mcp'
-num1=$(hostname | sed 's/PLIVRUNIAPP//')
+num1=$(hostname | sed 's/PLGIRAPP//')
 sus1=$(($num1-140)) ##Corregir numero de la resta una vez tengamos los nombres de equipo
+logDir=/var/log/genesys
+installDir=/opt/genesys
+unpackDir=/opt/genesys/instaladores/MCP
+mcpInstallFile=IP_vpMediaControl_9003653b1_ENU_linux.tar.gz
+
+## Variables SilentInstall
+Host=PLGIRAPP197
+Port=2025
+User=u594135
+Password=123456
+DataModel=64
+AudioFormat=Alaw
 
 ## Condicional de menos a 10
 if [[ $sus1 -lt 10 ]]
@@ -20,72 +33,72 @@ mcp2=$mcp1'b'
 
 ## Creacion Carpetas ##
 mkdir -p /var/www/gvp/mcp
-mkdir -p /opt/genesys/$mcp1
-mkdir -p /opt/genesys/$mcp2
-mkdir -p /var/log/genesys/$mcp1
-mkdir -p /var/log/genesys/$mcp2
-mkdir -p /opt/genesys/instaladores/MCP
+mkdir -p $installDir/$mcp1
+mkdir -p $installDir/$mcp2
+mkdir -p $logDir/$mcp1
+mkdir -p $logDir/$mcp2
+mkdir -p $unpackDir
 
 ## Permisos ##
 chown -R $usuario:accesstt /var/www/gvp 
-chown -R $usuario. /opt/genesys/$mcp1
-chown -R $usuario. /opt/genesys/$mcp2
-chown -R $usuario. /var/log/genesys/$mcp1
-chown -R $usuario. /var/log/genesys/$mcp2
-chown -R $usuario. /opt/genesys/instaladores/MCP
-chmod -R 777 /opt/genesys/instaladores/MCP
-chmod -R 755 /var/log/genesys/$mcp1
-chmod -R 755 /var/log/genesys/$mcp2
+chown -R $usuario. $installDir/$mcp1
+chown -R $usuario. $installDir/$mcp2
+chown -R $usuario. $logDir/$mcp1
+chown -R $usuario. $logDir/$mcp2
+chown -R $usuario. $unpackDir
+chmod -R 777 $unpackDir
+chmod -R 755 $logDir/$mcp1
+chmod -R 755 $logDir/$mcp2
 chmod -R 755 /var/www 
 
 ## Descomprimir
-chown $usuario. /opt/genesys/IP_vpMediaControl_9004606b1_ENU_linux.tar.gz
-chmod 755 /opt/genesys/IP_vpMediaControl_9004606b1_ENU_linux.tar.gz
-tar -zvxf /opt/genesys/IP_vpMediaControl_9004606b1_ENU_linux.tar.gz -C /opt/genesys/instaladores/MCP
-chmod -R 777 /opt/genesys/instaladores/MCP
-mv /opt/genesys/IP_vpMediaControl_9004606b1_ENU_linux.tar.gz /opt/genesys/instaladores/IP_vpMediaControl_9004606b1_ENU_linux.tar.gz
+chown $usuario. $installDir/$mcpInstallFile
+chmod 755 $installDir/$mcpInstallFile
+tar -zvxf $installDir/$mcpInstallFile -C $unpackDir
+chmod -R 777 $unpackDir
+mv $installDir/$mcpInstallFile $unpackDir/$mcpInstallFile
 
 ## Silent Install archivo A
 echo '[ConfigServer]
-Host=PLGIRAPP197
-Port=2025
-User=u594135
-Password=123456
+Host='$Host'
+Port='$Port'
+User='$User'
+Password='$Password'
 ApplicationName='$mcp1'
 
 [IPCommon]
-InstallPath=/opt/genesys/'$mcp1'/
-DataModel=64
+InstallPath='$installDir'/'$mcp1'/
+DataModel='$DataModel'
 
 [vpMediaControl]
-AudioFormat=Alaw
+AudioFormat='$AudioFormat'
 HttpProxyHost=
 VoiceXML=yes
 ' > genesys_silent.ini
-mv /opt/genesys/genesys_silent.ini /opt/genesys/instaladores/MCP/ip/genesys_silent.ini
-chmod 755 /opt/genesys/instaladores/MCP/ip/genesys_silent.ini
+mv $installDir/genesys_silent.ini $unpackDir/ip/genesys_silent.ini
+chmod 755 $unpackDir/ip/genesys_silent.ini
 
 
 ## Silent Install archivo B
 
 echo '[ConfigServer]
-Host=PLGIRAPP197
-Port=2025
-User=u594135
-Password=123456
+Host='$Host'
+Port='$Port'
+User='$User'
+Password='$Password'
 ApplicationName='$mcp2'
 
 [IPCommon]
-InstallPath=/opt/genesys/'$mcp2'/
-DataModel=64
+InstallPath='$installDir'/'$mcp2'/
+DataModel='$DataModel'
 
 [vpMediaControl]
-AudioFormat=Alaw
+AudioFormat='$AudioFormat'
 HttpProxyHost=
 VoiceXML=yes
 ' >> genesys_silent2.ini
-mv /opt/genesys/genesys_silent2.ini /opt/genesys/instaladores/MCP/ip/genesys_silent2.ini
-chmod 755 /opt/genesys/instaladores/MCP/ip/genesys_silent2.ini
+mv $installDir/genesys_silent2.ini $unpackDir/ip/genesys_silent2.ini
+chmod 755 $unpackDir/ip/genesys_silent2.ini
 
 ## Creacion de Servicio A
 
@@ -105,7 +118,7 @@ echo '#!/bin/sh
 
 SERVICE_NAME='$mcp1'
 USER='$usuario'
-LOG_FILE=/var/log/genesys/'$mcp1'/'$mcp1'_init
+LOG_FILE='$logDir'/'$mcp1'/'$mcp1'_init
 SUBIT="su - $USER -c "
 KILL_TIME=60
 
@@ -143,7 +156,7 @@ start() {
   fi
 
   #TODO look at using a more standard daemon function
-  PID=`su - $USER -s /bin/bash -c '\''cd /opt/genesys/'$mcp1'/bin ; ./run.sh >> /dev/null 2>&1 & echo $!'\''`
+  PID=`su - $USER -s /bin/bash -c '\''cd '$installDir'/'$mcp1'/bin ; ./run.sh >> /dev/null 2>&1 & echo $!'\''`
   RETVAL=$?
 
   
@@ -213,7 +226,7 @@ echo '#!/bin/sh
 
 SERVICE_NAME='$mcp2'
 USER='$usuario'
-LOG_FILE=/var/log/genesys/'$mcp2'/'$mcp2'_init
+LOG_FILE='$logDir'/'$mcp2'/'$mcp2'_init
 SUBIT="su - $USER -c "
 KILL_TIME=60
 
@@ -251,7 +264,7 @@ start() {
   fi
 
   #TODO look at using a more standard daemon function
-  PID=`su - $USER -s /bin/bash -c '\''cd /opt/genesys/'$mcp2'/bin ; ./run.sh >> /dev/null 2>&1 & echo $!'\''`
+  PID=`su - $USER -s /bin/bash -c '\''cd '$installDir'/'$mcp2'/bin ; ./run.sh >> /dev/null 2>&1 & echo $!'\''`
   RETVAL=$?
 
   
@@ -304,17 +317,18 @@ exit $RETVAL
 ' >> genesys-$mcp2
 
 ## Mover archivos a Init.d
-mv /opt/genesys/genesys-$mcp1 /etc/init.d/genesys-$mcp1
-mv /opt/genesys/genesys-$mcp2 /etc/init.d/genesys-$mcp2
+mv $installDir/genesys-$mcp1 /etc/init.d/genesys-$mcp1
+mv $installDir/genesys-$mcp2 /etc/init.d/genesys-$mcp2
 chmod 755 /etc/init.d/genesys-$mcp1
 chmod 755 /etc/init.d/genesys-$mcp2
 
 
 ## Instalacion con Silent
-su - $usuario -s /bin/bash -c 'cd /opt/genesys/instaladores/MCP/ip; ./install.sh -s -fr /opt/genesys/instaladores/MCP/ip/genesys_silent.ini -fl /opt/genesys/instaladores/MCP/ip/genesys_install_result.log'
+su - $usuario -s /bin/bash -c "cd $unpackDir/ip; ./install.sh -s -fr $unpackDir/ip/genesys_silent.ini -fl $unpackDir/ip/genesys_install_result.log"
+su - $usuario -s /bin/bash -c "cd $unpackDir/ip; ./install.sh -s -fr $unpackDir/ip/genesys_silent2.ini -fl $unpackDir/ip/genesys_install_result.log"
 
-su - $usuario -s /bin/bash -c 'cd /opt/genesys/instaladores/MCP/ip; ./install.sh -s -fr /opt/genesys/instaladores/MCP/ip/genesys_silent2.ini -fl /opt/genesys/instaladores/MCP/ip/genesys_install_result.log'
-
+## Iniciando servicios y viendo status
+## Adicionalmente se agregan al SystemCTL
 /etc/init.d/genesys-$mcp1 start
 /etc/init.d/genesys-$mcp2 start
 /etc/init.d/genesys-$mcp1 status
