@@ -4,6 +4,8 @@
 
 usuario=$1
 servicio=$2
+logDir=/var/log/genesys
+installDir=/opt/genesys
 
 ##Se verifica que se ingresen todos los parametros
 
@@ -34,7 +36,7 @@ echo '#!/bin/sh
 
 SERVICE_NAME='$servicio'
 USER='$usuario'
-LOG_FILE=/var/log/genesys/'$servicio'/'$servicio'_init
+LOG_FILE='$logDir'/'$servicio'/'$servicio'_init
 SUBIT="su - $USER -c "
 KILL_TIME=60
 
@@ -70,7 +72,7 @@ start() {
   fi
 
   #TODO look at using a more standard daemon function
-  PID=`su - $USER -s /bin/bash -c '\''cd /opt/genesys/'$servicio'/bin; ./run.sh >> /dev/null 2>&1 & echo $!'\''`
+  PID=`su - $USER -s /bin/bash -c '\''cd '$installDir'/'$servicio'/bin; ./run.sh >> /dev/null 2>&1 & echo $!'\''`
   RETVAL=$?
 
   
