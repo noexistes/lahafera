@@ -9,7 +9,7 @@ installDir=/opt/genesys
 
 ##Se verifica que se ingresen todos los parametros
 
-if [[ $# -eq 0 ]] ; then
+if [[ $# -eq 0 ]] || [[ $1 == "--help" ]] || [[ $1 == "-h" ]]; then
 
 {
 
