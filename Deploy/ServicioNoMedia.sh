@@ -14,7 +14,9 @@ if [[ $# -eq 0 ]] || [[ $1 == "--help" ]] || [[ $1 == "-h" ]]; then
 {
 
     echo 'Falta ingresar algun parametro'
-    echo 'Se envia primero usuario y luego servicio'
+    echo 'Se envia primero usuario y luego nombres del aplicativo'
+    echo 'Se generara el archivo con el prefijo genesy-'
+    echo 'el servicio se llamara por ejemplo genesys-nombredelaplicativo'
     exit 1
 
 }
